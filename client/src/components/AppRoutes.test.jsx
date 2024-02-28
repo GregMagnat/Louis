@@ -1,46 +1,84 @@
-// Importation des fonctions nécessaires pour les tests
+// Import des fonctions de rendu et d'écran de testing
 import { render, screen } from "@testing-library/react";
-// Importation du composant MemoryRouter pour simuler la navigation
+// Import de MemoryRouter pour simuler les routes
 import { MemoryRouter } from "react-router-dom";
-// Importation du composant AppRoutes à tester
+// Import du composant des routes de l'application
 import AppRoutes from "./AppRoutes";
 
-// Mock du composant PostsList pour isoler les tests
+// Mock des composants des fonctionnalités de posts
 jest.mock("../features/posts/PostsList", () => {
-  // Définition d'un composant fictif pour PostsList
-  const MockPostList = () => <div>Here is the matched post list component</div>;
-  // Retourne le composant fictif à la place de PostsList
-  return MockPostList;
+  // Composant mocké pour la liste des posts
+  const MockPostsList = () => (
+    <div>Your Matcher for PostsList component here</div>
+  );
+  return MockPostsList;
 });
 
-// Mock de la constante API_URL pour les tests
+jest.mock("../features/posts/PostDetails", () => {
+  // Composant mocké pour les détails d'un post
+  const MockPostDetails = () => (
+    <div>Your matcher for PostDetails component here</div>
+  );
+  return MockPostDetails;
+});
+
+jest.mock("../features/posts/NewPostForm", () => {
+  // Composant mocké pour le formulaire de création d'un nouveau post
+  const MockNewPostForm = () => (
+    <div>Your matcher for NewPostForm component here</div>
+  );
+  return MockNewPostForm;
+});
+
+jest.mock("../features/posts/PostEditForm", () => {
+  // Composant mocké pour le formulaire de modification d'un post
+  const MockPostEditForm = () => (
+    <div>Your matcher for PostEditForm component here</div>
+  );
+  return MockPostEditForm;
+});
+
+// Mock de l'URL de l'API
 jest.mock("../constants", () => ({
   API_URL: "http://your-test-api-url",
 }));
 
-// Définition des tests pour le composant AppRoutes
+// Description des tests du composant AppRoutes
 describe("AppRoutes component", () => {
-  // Test: vérifie que le chemin racine rend la liste des posts
-  test("rootpath renders Posts List", () => {
-    // Rend le composant AppRoutes avec le MemoryRouter et le chemin racine
-    render(<AppRoutes />, {
-      wrapper: MemoryRouter,
-      initialEntries: ["/"], // Définit le chemin initial comme "/"
+  // Fonction utilitaire pour rendre avec un routeur
+  const renderWithRouter = (ui, { initialEntries = ["/"] } = {}) => {
+    return render(ui, {
+      wrapper: ({ children }) => (
+        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+      ),
     });
-    // Vérifie que le texte attendu est présent dans l'écran rendu
-    const expectedtext = "Here is the matched post list component";
-    expect(screen.getByText(expectedtext)).toBeInTheDocument();
+  };
+
+  // Test : le chemin racine rend la liste des posts
+  test("root path renders PostsList", () => {
+    renderWithRouter(<AppRoutes />, { initialEntries: ["/"] });
+    const expectedText = "Your Matcher for PostsList component here";
+    expect(screen.getByText(expectedText)).toBeInTheDocument();
   });
 
-  // Test: vérifie que le chemin /posts/:id rend les détails d'un post spécifique
-  test("posts/:id renders Post Details", () => {
-    // Rend le composant AppRoutes avec le MemoryRouter et un chemin de post spécifique
-    render(<AppRoutes />, {
-      wrapper: MemoryRouter,
-      initialEntries: ["/posts/1"], // Définit le chemin initial comme "/posts/1"
-    });
-    // Vérifie que le texte attendu est présent dans l'écran rendu
-    const expectedtext = "Here is the matched post list component";
-    expect(screen.getByText(expectedtext)).toBeInTheDocument();
+  // Test : le chemin des détails d'un post rend les détails du post
+  test("post details path renders PostDetails", () => {
+    renderWithRouter(<AppRoutes />, { initialEntries: ["/posts/1"] });
+    const expectedText = "Your matcher for PostDetails component here";
+    expect(screen.getByText(expectedText)).toBeInTheDocument();
+  });
+
+  // Test : le chemin /new rend le formulaire de création d'un nouveau post
+  test("/new path renders NewPostForm", () => {
+    renderWithRouter(<AppRoutes />, { initialEntries: ["/new"] });
+    const expectedText = "Your matcher for NewPostForm component here";
+    expect(screen.getByText(expectedText)).toBeInTheDocument();
+  });
+
+  // Test : le chemin /posts/:id/edit rend le formulaire de modification d'un post
+  test("/posts/:id/edit path renders EditPostForm", () => {
+    renderWithRouter(<AppRoutes />, { initialEntries: ["/posts/1/edit"] });
+    const expectedText = "Your matcher for PostEditForm component here";
+    expect(screen.getByText(expectedText)).toBeInTheDocument();
   });
 });
