@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 
-function Navbar() {
+function NavBar() {
     return (
         <nav>
             <Link to="/">Posts List</Link>
             {" | "}
-            <Link to="/new">New Post</Link>
+            <Link to="/new">Create New Post</Link>
         </nav>
     );
 }
 
-export default Navbar;
+export default NavBar;
